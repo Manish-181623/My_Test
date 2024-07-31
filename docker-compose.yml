@@ -9,8 +9,7 @@ services:
       MYSQL_ROOT_PASSWORD: admin
     ports:
       - "3306:3306"
-    networks:
-      - java-network
+  
 
   backend:
     image: manish181623/ci-cd_pipeline_server:latest
@@ -33,8 +32,7 @@ services:
       AUTH_TOKEN_JWTSECRET: "36763979244226452948404D635166546A576D5A7134743777217A25432A462D"
       LOGGING_LEVEL_ORG_HIBERNATE_SQL: DEBUG
       LOGGING_LEVEL_ORG_HIBERNATE_TYPE_DESCRIPTOR_SQL_BASICBINDER: TRACE
-    networks:
-      - java-network
+    
     depends_on:
       - db
       - frontend
@@ -44,6 +42,4 @@ services:
     image: manish181623/ci-cd_pipeline_client:latest
     ports:
       - "8089:80"
-  networks:
-    java-network:
-      driver: bridge
+  
