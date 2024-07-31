@@ -58,6 +58,5 @@ jobs:
       run: |
         ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << EOF
           cd ${{ secrets.WORKDIR }}
-          git pull
-          docker-compose up -d
+          echo "Successfully entered into server"
         EOF
