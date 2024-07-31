@@ -1,4 +1,4 @@
-name: CI/CD Pipeline.
+name: CI/CD Pipeline
 
 on:
   push:
@@ -49,9 +49,15 @@ jobs:
 
     - name: Create SSH key
       run: |
-          install -m 600 -D /dev/null ~/.ssh/id_rsa
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          echo "${{ secrets.SSH_HOST }}" > ~/.ssh/known_hosts
-    - name: Connect and Pull
-      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORKDIR }} && docker-compose up -d"
-          
+        mkdir -p ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        echo "${{ secrets.SSH_HOST }}" > ~/.ssh/known_hosts
+
+    - name: Deploy application
+      run: |
+        ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} <<EOF
+          cd ${{ secrets.WORKDIR }}
+          git pull
+          docker-compose up -d
+        EOF
