@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: lakeSide_hotel_db
+      MYSQL_ROOT_PASSWORD: admin
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - java-network
+
+  backend:
+    image: manish181623/ci-cd_pipeline_server:latest
+    container_name: Backend_container
+    ports:
+      - "9192:9192"
+    environment:
+      SERVER_PORT: 9192
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/lakeSide_hotel_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: admin
+      SPRING_DATASOURCE_DRIVER-CLASS-NAME: com.mysql.cj.jdbc.Driver
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
+      SPRING_SERVLET_MULTIPART_MAX-FILE-SIZE: 500KB
+      SPRING_SERVLET_MULTIPART_MAX-REQUEST-SIZE: 500KB
+      SPRING_JPA_SHOW-SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+      SPRING_JPA_HIBERNATE_DDL-AUTO: update
+      AUTH_TOKEN_EXPIRATIONINMILS: 3600000
+      AUTH_TOKEN_JWTSECRET: "36763979244226452948404D635166546A576D5A7134743777217A25432A462D"
+      LOGGING_LEVEL_ORG_HIBERNATE_SQL: DEBUG
+      LOGGING_LEVEL_ORG_HIBERNATE_TYPE_DESCRIPTOR_SQL_BASICBINDER: TRACE
+    networks:
+      - java-network
+    depends_on:
+      - db
+      - frontend
+    
+
+  frontend:
+    image: manish181623/ci-cd_pipeline_client:latest
+    ports:
+      - "8089:80"
