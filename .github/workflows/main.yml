@@ -47,16 +47,11 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Install SSH client
-      run: sudo apt-get install -y openssh-client
-    
-    - name: SSH and Deploy
-      uses: appleboy/ssh-action@v0.1.9
-      with:
-        host: ${{ secrets.SERVER_DNS }}
-        password: ${{ secrets.SERVER_PASSWORD }}
-        script: |
-          cd /my_project
-          sudo docker-compose pull
-          sudo docker-compose pull
-          sudo docker-compose up -d
+    - name: Create SSH key
+      run: |
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_HOST }}" > ~/.ssh/known_hosts
+    - name: Connect and Pull
+      run: ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} "cd ${{ secrets.WORKDIR }} && docker-compose up -d
+          
